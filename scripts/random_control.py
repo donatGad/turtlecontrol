@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+
+import rospy
+from geometry_msgs.msg import Twist
+from numpy import random
+import turtlesim.srv
+from math import *
+
+
+class NodeExample():
+
+    def random_control(self):
+        v = 2
+        w = random.random_integers(-5,5)
+        vel = Twist()
+        vel.linear.x = v
+        vel.angular.z = w
+        return vel
+            
+        
+
+    def __init__(self):
+        pub = rospy.Publisher('/turtle2/cmd_vel', Twist, queue_size=1)
+        self.vel_cmd = Twist()
+        while not rospy.is_shutdown():
+            self.vel_cmd = self.random_control()
+            pub.publish(self.vel_cmd)
+            rospy.sleep(1.0)
+
+if __name__ == '__main__':
+    rospy.wait_for_service('kill')
+    killer = rospy.ServiceProxy('kill', turtlesim.srv.Kill)
+    try:
+        killer('turtle1')    
+    except: 
+        pass
+    try:
+        killer('turtle2')    
+    except: 
+        pass
+
+    rospy.wait_for_service('spawn')
+    spawner = rospy.ServiceProxy('spawn', turtlesim.srv.Spawn)
+    spawner(1, 1, -pi/4, 'turtle1')    
+    spawner(10, 10, 0, 'turtle2')
+    
+
+    rospy.init_node('rndctr')
+
+    try:
+        ne = NodeExample()
+    except rospy.ROSInterruptException: pass
+
+
