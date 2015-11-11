@@ -6,10 +6,12 @@ from numpy import random
 import turtlesim.srv
 from math import *
 
+"""modificirani kod sa predavanja"""
 
 class NodeExample():
 
     def random_control(self):
+        """ potprogram za random ponasanje kornjace """
         v = 2
         w = random.random_integers(-5,5)
         vel = Twist()
@@ -17,17 +19,17 @@ class NodeExample():
         vel.angular.z = w
         return vel
             
-        
-
     def __init__(self):
-        pub = rospy.Publisher('/turtle2/cmd_vel', Twist, queue_size=1)
+        pub = rospy.Publisher('/turtle2/cmd_vel', Twist, queue_size=10)    #definiranje poruke
         self.vel_cmd = Twist()
         while not rospy.is_shutdown():
+            #objava poruke(slijeca brzina kornjace)
             self.vel_cmd = self.random_control()
             pub.publish(self.vel_cmd)
             rospy.sleep(1.0)
 
 if __name__ == '__main__':
+    """ubijanje nepotrebnih i stvaranje potrebnih kornjaca"""
     rospy.wait_for_service('kill')
     killer = rospy.ServiceProxy('kill', turtlesim.srv.Kill)
     try:
@@ -42,13 +44,11 @@ if __name__ == '__main__':
     rospy.wait_for_service('spawn')
     spawner = rospy.ServiceProxy('spawn', turtlesim.srv.Spawn)
     spawner(1, 1, -pi/4, 'turtle1')    
-    spawner(10, 10, 0, 'turtle2')
+    spawner(10, 10, 3*pi/4, 'turtle2')
     
 
-    rospy.init_node('rndctr')
-
-    try:
+    rospy.init_node('random_control')  #registracija noda kod roscore-a
+    
+    try:    #pokretanje
         ne = NodeExample()
     except rospy.ROSInterruptException: pass
-
-
