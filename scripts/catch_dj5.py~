@@ -14,7 +14,7 @@ def ubij(name):
         killer(name)
     except:
         pass
-
+""" slijedece dvije funkcije stvaraju i brisu kornjace koristeci ROS service turtlesim paketa"""
 def stvori(x,y,theta,name):
     rospy.wait_for_service('spawn')
     spawner = rospy.ServiceProxy('spawn', turtlesim.srv.Spawn)
@@ -33,20 +33,16 @@ class kornjaca():
         
         try:
             self.razlika = sqrt(pow(turtle1.x-turtle2.x,2)+pow(turtle1.y-turtle2.y,2))
-            if self.razlika > 1:
-                nije_bilo = 1
-            if self.razlika < 1 and nije_bilo == 1:
+            if self.razlika < 1:
                 rospy.loginfo(" You win!!")  
-                nije_bilo = 0 
-            if nije_bilo == 0:
-                rospy.loginfo(" %d", nije_bilo)     
+                
         except:
             pass
         
     def __init__(self, name):
         self.name = name
 
-class NodeExample():
+class NodeSubPub():
 
     def random_control(self):
         """ potprogram za random ponasanje kornjace """
@@ -73,16 +69,16 @@ class NodeExample():
 if __name__ == '__main__':
     """ubijanje nepotrebnih i stvaranje potrebnih kornjaca"""
     ubij('turtle1')
-    ubij('turtle2')    
+    #ubij('turtle2')  - nema smisla ako koristimo launch  
     stvori(1, 1, -pi/4, 'turtle1')    
     stvori(10, 10, 3*pi/4, 'turtle2')  
     obrisi()  
     
-    turtle1 = kornjaca('turtle1')
+    turtle1 = kornjaca('turtle1')  #stvaranje instanci klase kornjaca
     turtle2 = kornjaca('turtle2')   
     
     try:    #pokretanje
-        ne = NodeExample()
+        nsp = NodeSubPub()
     except rospy.ROSInterruptException: pass
         
 
